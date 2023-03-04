@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+{% block parameter_selection_page %}
+<head>
+    <meta charset="UTF-8">
+    <title>Страница для выбора формата данных.</title>
+
+</head>
+<body>
+    <h2>Приложение для получения информации о друзьях vk.com</h2>
+    <form method="POST">
+        <label>
+            <p>
+                <b>1. Авторизационный токен</b>
+                <br>
+                <input readonly required type="text" value="{{ access_token }}" name="assess_token">
+            </p>
+        </label>
+        <label>
+            <p><b>2. ID пользователя</b>
+                <br>
+                <input required type="text" value="{{ user_id }}" placeholder="1" name="user_id">
+            </p>
+        </label>
+        <label>
+            <p>
+                <b>3. Формат выходного файла</b>
+                <br>
+                <input required name="file_format" type="radio" value="csv" checked> .CSV<Br>
+                <input required name="file_format" type="radio" value="tsv"> .TSM<Br>
+                <input required name="file_format" type="radio" value="json"> .JSON<Br>
+            </p>
+        </label>
+        <label>
+            <p>
+                <b>4. Путь к выходному файлу и имя файла</b>
+                <br>
+                <input required name="file_name_and_path" type="text" placeholder="{{ default_file_path_and_name }}" value="{{ default_file_path_and_name }}">
+            </p>
+        </label>
+        <button type="submit">Получить отчет</button>
+    </form>
+</body>
+{% endblock %}
+</html>

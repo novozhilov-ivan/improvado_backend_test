@@ -3,7 +3,7 @@ from flask_restful import Api
 
 from api.resources import Code
 
-app = Flask('VK_get_friends_report')
+app = Flask('VK_get_friends_report', template_folder='api/templates')
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 app.config["JSON_AS_ASCII"] = False
 app.config["JSON_SORT_KEYS"] = False
