@@ -1,9 +1,6 @@
 from flask import Flask
-from flask_restful import Api
 
-from api.resources import Code
-
-app = Flask('VK_get_friends_report', template_folder='api/templates')
+app = Flask('VK_get_friends_report', template_folder='app/templates')
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 app.config["JSON_AS_ASCII"] = False
 app.config["JSON_SORT_KEYS"] = False
@@ -12,8 +9,3 @@ app.config["DEBUG"] = True
 app.config["TESTING"] = True
 app.config["FLASK_ENV"] = "development"
 app.config["SERVER_NAME"] = "127.0.0.1:8000"
-api = Api(app)
-
-
-api.add_resource(Code, '/api/auth/')
-api.init_app(app)

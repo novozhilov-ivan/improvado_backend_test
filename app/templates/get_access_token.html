@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Получение токена</title>
+</head>
+<body>
+    {% block get_access_token %}
+         <h2>Приложение для получения информации о друзьях vk.com</h2>
+        <form method="POST">
+             <label>
+                <p>
+                    <b>Скопируйте полностью URL из адресной строки и вставьте в поле ниже</b>
+                    <br>
+                    <input required type="text" placeholder="http://127.0.0.1:8000/auth/#..." name="full_url">
+                </p>
+            </label>
+            <button type="submit">Отправить</button>
+        </form>
+    {% endblock %}
+</body>
+</html>
