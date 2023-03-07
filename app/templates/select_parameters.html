@@ -9,10 +9,10 @@
 <body>
     <h2>Приложение для получения информации о друзьях vk.com</h2>
     <p>
-        У вас {{ friends_amount }} друзей
+        Ваш ID - {{ app_user_id }}
     </p>
     <p>
-        Ваш ID - {{ user_id }}
+        У пользователя с ID {{ user_id_for_get_friends }} - {{ user_friends_amount }} друзей.
     </p>
     <form method="POST">
         <label title="По умолчанию подставлен ваш авторизационный токен.">
@@ -22,21 +22,25 @@
                 <input readonly required type="text" value="{{ access_token }}" name="assess_token">
             </p>
         </label>
-        <label title="По умолчанию подставлен ваш ID - {{ user_id }}">
-            <p><b>ID пользователя</b>
+        <label >
+            <p><b>Ваш ID или ID другого пользователя</b>
                 <br>
-                <input required type="text" value="{{ user_id }}" placeholder="1" name="user_id">
+                <input required type="number"  value="{{ user_id_for_get_friends }}" placeholder="1" name="user_id_for_get_friends">
             </p>
         </label>
         <label>
             <p>
                 <b>Количество друзей в отчете</b>
                 <br>
-                <input required name="friends_amount" type="radio" value="all" checked> Все<Br>
-                <label title="Количество страниц - {{ amount_friends_pages }}">
-                <input required name="friends_amount" type="radio" value="page"> Страница (100 друзей)<Br>
+                <input required name="friends_amount_type" type="radio" value="all" checked> Все<Br>
+                <label title="Количество страниц - {{ amount_of_pages_with_friends }}">
+                <input required name="friends_amount_type" type="radio" value="page"> Пагинация ({{friends_on_page}} друзей на странице)<Br>
                     Номер страницы<Br>
-                    <input required name="page_number" type="number" min="1" max="{{ amount_friends_pages }}" value="1"><Br>
+                    {% if user_friends_amount > 0 %}
+                    <input required name="page_number" type="number" min="1" max="{{ amount_of_pages_with_friends }}" value="1"><Br>
+                    {% else %}
+                    <input type="number"><Br>
+                    {% endif %}
                 </label>
             </p>
         </label>
@@ -49,11 +53,11 @@
                 <input required name="file_format" type="radio" value="json"> .json<Br>
             </p>
         </label>
-        <label title='По умолчанию "../report" - файл с именем report в текущей директории.'>
+        <label title='По умолчанию файл с именем "{{default_file_name}}" в текущей директории.'>
             <p>
                 <b>Имя и путь к выходному файлу</b>
                 <br>
-                <input required name="file_name_and_path" type="text" placeholder="{{ default_file_path_and_name }}" value="{{ default_file_path_and_name }}">
+                <input required name="file_name_and_path" type="text" placeholder="{{ default_file_path + default_file_name }}" value="{{ default_file_path + default_file_name }}">
             </p>
         </label>
         <button type="submit">Получить отчет</button>

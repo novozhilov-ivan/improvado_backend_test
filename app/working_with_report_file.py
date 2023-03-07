@@ -16,10 +16,11 @@ def structure_date_by_iso_format(date: str | None):
     return iso_date_format
 
 
-def structure_data_by_fields(data: dict):
+def structure_data_by_fields(data: list):
     structure_data = {}
     report = []
-    items = data['response']['items']
+    # items = data['response']['items']
+    items = data
     for item in items:
         structure_data['first_name'] = item['first_name'] if item['first_name'] else None
         structure_data['last_name'] = item['last_name'] if item['last_name'] else None
@@ -47,11 +48,17 @@ def write_data_to_file(friends_data: list, file_path_and_name: str, file_format:
                 file.write(f"{line}\n")
 
 
-def create_report(friends_data: dict, file_path_and_name: str, file_format: str):
+def sort_friends_data_by_name(unsorted_items: list) -> list:
+    sorted_items = sorted(unsorted_items, key=lambda k: k['first_name'])
+    return sorted_items
+
+
+def create_report(friends_data: list, file_path_and_name: str, file_format: str):
     structure_friends_data = structure_data_by_fields(friends_data)
+    sorted_friends_data = sort_friends_data_by_name(structure_friends_data)
     allowed_formats = ["json", "csv", "tsv"]
     if file_format in allowed_formats:
-        write_data_to_file(structure_friends_data, file_path_and_name, file_format)
+        write_data_to_file(sorted_friends_data, file_path_and_name, file_format)
     else:
         return {'error': f'Формат файла {file_format} не предусмотрен в приложении. '
                          f'Доступные форматы отчета {",".join(allowed_formats)}.'}

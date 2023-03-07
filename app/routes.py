@@ -2,6 +2,7 @@ import math
 import os
 
 from flask import redirect, request, url_for, render_template, send_file
+from memory_profiler import profile
 
 from app.config import app
 from app.utils import VkontakteApp
@@ -11,6 +12,17 @@ from app.utils import VkontakteApp
 # TODO Добавить docstrings
 # TODO Добавить логирование
 # TODO Добавить тесты функций
+
+
+def get_params_select_page_with_user_friends_amount(access_token: str, app_user_id, user_id_for_get_friends: str):
+    user_friends_amount = VkontakteApp().get_friends_amount(access_token, user_id_for_get_friends)
+    redirect_uri = f"{url_for('parameter_selection_page')}?" \
+                   f"access_token={access_token}&" \
+                   f"app_user_id={app_user_id}&" \
+                   f"user_friends_amount={user_friends_amount}&" \
+                   f"user_id_for_get_friends={user_id_for_get_friends}"
+    return redirect(redirect_uri)
+
 
 @app.route('/')
 def redirect_to_allow_application_access():
@@ -31,15 +43,13 @@ def get_access_token():
     if 'access_token' in full_url and 'user_id' in full_url:
         url_params = full_url.split('#')[1].split('&')
         access_token = url_params[0].split('=')[1]
-        user_id = url_params[2].split('=')[1]
+        app_user_id = url_params[2].split('=')[1]
 
-        friends_amount = VkontakteApp().get_friends_amount(access_token, user_id)
-
-        redirect_uri = f"{url_for('parameter_selection_page')}?" \
-                       f"access_token={access_token}&" \
-                       f"user_id={user_id}&" \
-                       f"friends_amount={friends_amount}"
-        return redirect(redirect_uri)
+        return get_params_select_page_with_user_friends_amount(
+            access_token,
+            app_user_id=app_user_id,
+            user_id_for_get_friends=app_user_id
+        )
 
     return "<p>Произошла ошибка. Попробуйте еще раз.</p>"
 
@@ -67,44 +77,64 @@ def get_access_token():
 @app.route('/friends/', methods=['GET'])
 def parameter_selection_page():
     access_token = request.values.get('access_token')
-    user_id = request.values.get('user_id')
-    friends_amount = request.values.get('friends_amount')
-    # TODO добавить обработку ошибки если не все values получены (если хотя бы 1 не None)
-    if access_token and user_id and friends_amount:
+    app_user_id = request.values.get('app_user_id')
+    user_friends_amount = request.values.get('user_friends_amount')
+    user_id_for_get_friends = request.values.get('user_id_for_get_friends')
+
+    if access_token and app_user_id and user_friends_amount:
         default_file_path = "./"
         default_file_name = "report"
-        friends_amount = int(friends_amount)
-        amount_friends_pages = friends_amount
-        if friends_amount:
-            amount_friends_pages = math.ceil(friends_amount / 100)
-
+        user_friends_amount = int(user_friends_amount)
+        friends_on_page = 500
+        if user_friends_amount:
+            amount_of_pages_with_friends = math.ceil(user_friends_amount / friends_on_page)
+        else:
+            amount_of_pages_with_friends = 0
         return render_template(
             "select_parameters.html",
             access_token=access_token,
-            user_id=user_id,
-            friends_amount=friends_amount,
-            amount_friends_pages=amount_friends_pages,
-            default_file_path_and_name=f"{default_file_path}{default_file_name}"
+            app_user_id=app_user_id,
+            user_id_for_get_friends=user_id_for_get_friends,
+            user_friends_amount=user_friends_amount,
+            amount_of_pages_with_friends=amount_of_pages_with_friends,
+            friends_on_page=friends_on_page,
+            default_file_path=default_file_path,
+            default_file_name=default_file_name
         )
     return "<p>Произошла ошибка. Попробуйте еще раз.</p>"
 
 
 @app.route('/friends/', methods=['POST'])
 def get_form_data():
+    user_friends_amount = int(request.values.get('user_friends_amount'))
+    new_user_id_for_get_friends = request.form.get("user_id_for_get_friends")
+    user_id_for_get_friends = request.values.get("user_id_for_get_friends")
+    app_user_id = request.values.get("app_user_id")
     access_token = request.form.get("assess_token")
-    user_id = request.form.get("user_id")
+    if not user_friends_amount and new_user_id_for_get_friends == user_id_for_get_friends:
+        return '<p>У вас нет друзей.</p>'
+    if new_user_id_for_get_friends not in (app_user_id, user_id_for_get_friends):
+        return get_params_select_page_with_user_friends_amount(
+            access_token,
+            app_user_id=app_user_id,
+            user_id_for_get_friends=new_user_id_for_get_friends
+        )
 
-    friends_amount = request.form.get("friends_amount")
-    friends_amount = 100 if friends_amount == "page" else None
-
-    page_number = request.form.get("page_number")
-    page_number = int(page_number) if friends_amount else None
-
+    friends_amount_type = request.form.get("friends_amount_type")
     file_format = request.form.get("file_format")
     file_path_and_name = request.form.get("file_name_and_path")
-    if access_token and user_id and file_format and file_path_and_name:
-        VkontakteApp().create_vk_friends_report(access_token, user_id,
-                                                friends_amount=friends_amount,
+    # friends_on_page = 100 if user_friends_amount < 1000 else 1000
+    friends_on_page = 500
+    page_number = int(request.form.get("page_number"))
+
+    if friends_amount_type == "page":
+        friends_amount_in_report = friends_on_page
+    else:
+        friends_amount_in_report = user_friends_amount
+        page_number = None
+    if access_token and user_id_for_get_friends and file_format and file_path_and_name:
+        VkontakteApp().create_vk_friends_report(access_token, user_id_for_get_friends,
+                                                friends_amount_in_report=friends_amount_in_report,
                                                 page_number=page_number,
                                                 file_path_and_name=file_path_and_name,
                                                 file_format=file_format)
