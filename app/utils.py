@@ -72,7 +72,7 @@ class VkontakteApp:
         return response.json()
 
     def get_friends_amount(self, access_token: str, user_id: str):
-        friends = self.get_friends(access_token, user_id, fields=())
+        friends = self.get_friends(access_token, user_id, fields=(), order='random')
         return friends['response']['count']
 
     def create_vk_friends_report(self, access_token: str, user_id: str,
