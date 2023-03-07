@@ -2,7 +2,6 @@ import math
 import os
 
 from flask import redirect, request, url_for, render_template, send_file
-from memory_profiler import profile
 
 from app.config import app
 from app.utils import VkontakteApp
