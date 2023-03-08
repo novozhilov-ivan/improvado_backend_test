@@ -19,11 +19,10 @@ def structure_date_by_iso_format(date: str | None):
 def structure_data_by_fields(data: list):
     structure_data = {}
     report = []
-    # items = data['response']['items']
     items = data
     for item in items:
-        structure_data['first_name'] = item['first_name'] if item['first_name'] else None
-        structure_data['last_name'] = item['last_name'] if item['last_name'] else None
+        structure_data['first_name'] = item['first_name'] if item.get('first_name') else None
+        structure_data['last_name'] = item['last_name'] if item.get('last_name') else None
         structure_data['country'] = item['country']['title'] if item.get('country') else None
         structure_data['city'] = item['city']['title'] if item.get('city') else None
         structure_data['birthdate'] = structure_date_by_iso_format(item.get('bdate'))
@@ -38,9 +37,8 @@ def write_data_to_file(friends_data: list, file_path_and_name: str, file_format:
             json.dump(friends_data, file, indent=4, ensure_ascii=False)
         elif file_format == 'csv':
             writer = csv.writer(file)
-            writer.writerow(['first_name', 'last_name', 'country', 'city', 'birthdate', 'sex'])
-            for friend_data in friends_data:
-                writer.writerow(friend_data.values())
+            writer.writerow(friends_data[0].keys())
+            writer.writerows(map(dict.values, friends_data))
         elif file_format == 'tsv':
             for friend_data in friends_data:
                 line = [elem if elem else '' for elem in friend_data.values()]

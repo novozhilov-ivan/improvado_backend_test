@@ -34,7 +34,7 @@
                 <br>
                 <input required name="friends_amount_type" type="radio" value="all" checked> Все<Br>
                 <label title="Количество страниц - {{ amount_of_pages_with_friends }}">
-                <input required name="friends_amount_type" type="radio" value="page"> Пагинация ({{friends_on_page}} друзей на странице)<Br>
+                <input required name="friends_amount_type" type="radio" value="page"> Пагинация ({{friends_per_page}} друзей на странице)<Br>
                     Номер страницы<Br>
                     {% if user_friends_amount > 0 %}
                     <input required name="page_number" type="number" min="1" max="{{ amount_of_pages_with_friends }}" value="1"><Br>
