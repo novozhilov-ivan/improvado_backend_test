@@ -9,7 +9,7 @@ ___
 ## Установка
 
 
-Создайте и активируйте виртуальное окружение
+Создание и активация виртуального окружения
 ```bash
 $ python3.10 -m venv venv
 
@@ -18,7 +18,7 @@ $ source venv/bin/activate
 # Windows
 $ venv/Scripts/activate.bat
 ```
-Установите библиотеки зависимостей из файла requirements.txt
+Установка библиотек зависимостей из файла requirements.txt
 ```bash
 (venv) $ pip install -r requirements.txt
 ```
