@@ -12,7 +12,7 @@ def get_report_params_selection_page_for_user(access_token: str, app_user_id,
     try:
         user_friends_amount = response['response']['count']
 
-        redirect_uri = f"{url_for('parameter_selection_page')}?" \
+        redirect_uri = f"{url_for('parameters_on_selection_pages')}?" \
                        f"access_token={access_token}&" \
                        f"app_user_id={app_user_id}&" \
                        f"user_friends_amount={user_friends_amount}&" \
